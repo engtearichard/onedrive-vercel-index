@@ -11,7 +11,8 @@ export function obfuscateToken(token: string): string {
   const encrypted = CryptoJS.AES.encrypt(token, AES_SECRET_KEY)
   return encrypted.toString()
 }
-export function revealObfuscatedToken(obfuscated: string): string {
+export function revealObfuscatedToken(obfuscatedToken: string): string {
+  return obfuscatedToken
   // Decrypt SHA256 obfuscated token
   const decrypted = CryptoJS.AES.decrypt(obfuscated, AES_SECRET_KEY)
   return decrypted.toString(CryptoJS.enc.Utf8)
