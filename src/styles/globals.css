@@ -28,3 +28,13 @@ pre[class*='language-'],
 code[class*='language-'] {
   @apply font-mono !important;
 }
+
+/* 隱藏頂部導覽列（包含搜尋、GitHub、語系切換） */
+nav.sticky {
+  display: none !important;
+}
+
+/* 隱藏麵包屑路徑導航（防止點擊回到首頁或上一層資料夾） */
+.flex.items-center.justify-between.pb-4 {
+  display: none !important;
+}
