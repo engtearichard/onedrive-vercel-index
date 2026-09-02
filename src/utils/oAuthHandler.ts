@@ -7,9 +7,7 @@ import apiConfig from '../../config/api.config'
 // access tokens, and refresh tokens), used along with the following two functions
 const AES_SECRET_KEY = 'onedrive-vercel-index'
 export function obfuscateToken(token: string): string {
-  // Encrypt token with AES
-  const encrypted = CryptoJS.AES.encrypt(token, AES_SECRET_KEY)
-  return encrypted.toString()
+  return token
 }
 export function revealObfuscatedToken(obfuscatedToken: string): string {
   return obfuscatedToken
