@@ -29,12 +29,12 @@ code[class*='language-'] {
   @apply font-mono !important;
 }
 
-/* 隱藏頂部導覽列（包含搜尋、GitHub、語系切換） */
-nav.sticky {
+/* 隱藏頂部主導覽列 */
+nav {
   display: none !important;
 }
 
-/* 隱藏麵包屑路徑導航（防止點擊回到首頁或上一層資料夾） */
-.flex.items-center.justify-between.pb-4 {
+/* 隱藏包含返回首頁的麵包屑導航列 */
+main > .flex.items-center.justify-between:first-child {
   display: none !important;
 }
