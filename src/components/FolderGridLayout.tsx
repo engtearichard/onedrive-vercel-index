@@ -77,41 +77,52 @@ const FolderGridLayout = ({
   const getItemPath = (name: string) => `${path === '/' ? '' : path}/${encodeURIComponent(name)}`
 
   return (
-    <div className="rounded bg-white shadow-sm dark:bg-gray-900 dark:text-gray-100">
-      <div className="flex items-center border-b border-gray-900/10 px-3 text-xs font-bold uppercase tracking-widest text-gray-600 dark:border-gray-500/30 dark:text-gray-400">
-        <div className="flex-1">{t('{{count}} item(s)', { count: folderChildren.length })}</div>
-        <div className="flex p-1.5 text-gray-700 dark:text-gray-400">
-          <Checkbox
-            checked={totalSelected}
-            onChange={toggleTotalSelected}
-            indeterminate={true}
-            title={t('Select all files')}
-          />
+      <div className="flex items-center justify-between border-b border-gray-900/10 px-3 py-1.5 text-xs font-medium text-gray-600 dark:border-gray-500/30 dark:text-gray-400">
+        <div>{t('{{count}} item(s)', { count: folderChildren.length })}</div>
+
+        <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
+          {/* 全選 */}
+          <label className="flex cursor-pointer items-center space-x-1 rounded px-1.5 py-1 hover:bg-gray-100 dark:hover:bg-gray-800">
+            <Checkbox
+              checked={totalSelected}
+              onChange={toggleTotalSelected}
+              indeterminate={true}
+              title={t('Select all files')}
+            />
+            <span className="text-xs">{t('全選')}</span>
+          </label>
+
+          {/* 複製連結 */}
           <button
             title={t('Copy selected files permalink')}
-            className="cursor-pointer rounded p-1.5 hover:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-400 disabled:hover:bg-white dark:hover:bg-gray-600 disabled:dark:text-gray-600 disabled:hover:dark:bg-gray-900"
+            className="flex cursor-pointer items-center space-x-1 rounded px-1.5 py-1 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent dark:hover:bg-gray-800"
             disabled={totalSelected === 0}
             onClick={() => {
               clipboard.copy(handleSelectedPermalink(getBaseUrl()))
               toast.success(t('Copied selected files permalink.'))
             }}
           >
-            <FontAwesomeIcon icon={['far', 'copy']} size="lg" />
+            <FontAwesomeIcon icon={['far', 'copy']} />
+            <span className="text-xs">{t('複製連結')}</span>
           </button>
+
+          {/* 下載 */}
           {totalGenerating ? (
-            <Downloading title={t('Downloading selected files, refresh page to cancel')} style="p-1.5" />
+            <Downloading title={t('Downloading selected files, refresh page to cancel')} style="px-1.5 py-1" />
           ) : (
             <button
               title={t('Download selected files')}
-              className="cursor-pointer rounded p-1.5 hover:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-400 disabled:hover:bg-white dark:hover:bg-gray-600 disabled:dark:text-gray-600 disabled:hover:dark:bg-gray-900"
+              className="flex cursor-pointer items-center space-x-1 rounded px-1.5 py-1 font-semibold text-blue-600 hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-40 disabled:hover:bg-transparent dark:text-blue-400 dark:hover:bg-gray-800"
               disabled={totalSelected === 0}
               onClick={handleSelectedDownload}
             >
-              <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} size="lg" />
+              <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} />
+              <span className="text-xs">{t('下載')}</span>
             </button>
           )}
         </div>
       </div>
+
 
       <div className="grid grid-cols-2 gap-3 p-3 md:grid-cols-4">
         {folderChildren.map((c: OdFolderChildren) => (
