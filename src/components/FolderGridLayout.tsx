@@ -77,6 +77,7 @@ const FolderGridLayout = ({
   const getItemPath = (name: string) => `${path === '/' ? '' : path}/${encodeURIComponent(name)}`
 
   return (
+    <div className="rounded bg-white shadow-sm dark:bg-gray-900 dark:text-gray-100">
       <div className="flex items-center justify-between border-b border-gray-900/10 px-3 py-1.5 text-xs font-medium text-gray-600 dark:border-gray-500/30 dark:text-gray-400">
         <div>{t('{{count}} item(s)', { count: folderChildren.length })}</div>
 
@@ -122,7 +123,6 @@ const FolderGridLayout = ({
           )}
         </div>
       </div>
-
 
       <div className="grid grid-cols-2 gap-3 p-3 md:grid-cols-4">
         {folderChildren.map((c: OdFolderChildren) => (
