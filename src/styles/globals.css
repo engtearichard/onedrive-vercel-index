@@ -29,15 +29,19 @@ code[class*='language-'] {
   @apply font-mono !important;
 }
 
-/* 隱藏最上方的黑底主導覽列（包含搜尋框、語系） */
-body > #__next > div > nav:first-child,
-#__next > nav:first-child {
+/* 隱藏最頂部的主選單（包含「遊戲英語」、搜尋框、GitHub 等） */
+nav:not(.flex.items-center.justify-between) {
   display: none !important;
 }
 
-/* 針對第二層導覽列：只隱藏左側的麵包屑/首頁連結，保留右側 SwitchLayout 切換按鈕 */
-nav .flex.items-center.truncate {
-  display: none !important;
+/* 僅隱藏麵包屑路徑（首頁 > K-Class > 學員名稱） */
+nav.flex.items-center.justify-between > :first-child {
+  visibility: hidden !important;
+}
+
+/* 確保右側的「圖示/列表」切換選單維持靠右顯示 */
+nav.flex.items-center.justify-between {
+  justify-content: flex-end !important;
 }
 
 /* 強制鎖定為淺色白底模式 */
