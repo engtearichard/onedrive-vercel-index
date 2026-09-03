@@ -3,7 +3,6 @@ import type { OdFolderChildren } from '../types'
 import Link from 'next/link'
 import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useClipboard } from 'use-clipboard-copy'
 import { useTranslation } from 'next-i18next'
 
 import { getBaseUrl } from '../utils/getBaseUrl'
@@ -64,13 +63,10 @@ const FolderGridLayout = ({
   totalGenerating,
   handleSelectedDownload,
   folderGenerating,
-  handleSelectedPermalink,
   handleFolderDownload,
   toast,
 }) => {
-  const clipboard = useClipboard()
   const hashedToken = getStoredToken(path)
-
   const { t } = useTranslation()
 
   // Get item path from item name
@@ -92,20 +88,6 @@ const FolderGridLayout = ({
             />
             <span className="text-xs">{t('全選')}</span>
           </label>
-
-          {/* 複製連結 */}
-          <button
-            title={t('Copy selected files permalink')}
-            className="flex cursor-pointer items-center space-x-1 rounded px-1.5 py-1 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent dark:hover:bg-gray-800"
-            disabled={totalSelected === 0}
-            onClick={() => {
-              clipboard.copy(handleSelectedPermalink(getBaseUrl()))
-              toast.success(t('Copied selected files permalink.'))
-            }}
-          >
-            <FontAwesomeIcon icon={['far', 'copy']} />
-            <span className="text-xs">{t('複製連結')}</span>
-          </button>
 
           {/* 下載 */}
           {totalGenerating ? (
@@ -133,16 +115,6 @@ const FolderGridLayout = ({
             <div className="absolute top-0 right-0 z-10 m-1 rounded bg-white/50 py-0.5 opacity-0 transition-all duration-100 group-hover:opacity-100 dark:bg-gray-900/50">
               {c.folder ? (
                 <div>
-                  <span
-                    title={t('Copy folder permalink')}
-                    className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
-                    onClick={() => {
-                      clipboard.copy(`${getBaseUrl()}${getItemPath(c.name)}`)
-                      toast(t('Copied folder permalink.'), { icon: '👌' })
-                    }}
-                  >
-                    <FontAwesomeIcon icon={['far', 'copy']} />
-                  </span>
                   {folderGenerating[c.id] ? (
                     <Downloading title={t('Downloading folder, refresh page to cancel')} style="px-1.5 py-1" />
                   ) : (
@@ -157,20 +129,6 @@ const FolderGridLayout = ({
                 </div>
               ) : (
                 <div>
-                  <span
-                    title={t('Copy raw file permalink')}
-                    className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
-                    onClick={() => {
-                      clipboard.copy(
-                        `${getBaseUrl()}/api/raw/?path=${getItemPath(c.name)}${
-                          hashedToken ? `&odpt=${hashedToken}` : ''
-                        }`
-                      )
-                      toast.success(t('Copied raw file permalink.'))
-                    }}
-                  >
-                    <FontAwesomeIcon icon={['far', 'copy']} />
-                  </span>
                   <a
                     title={t('Download file')}
                     className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
