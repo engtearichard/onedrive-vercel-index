@@ -29,22 +29,15 @@ code[class*='language-'] {
   @apply font-mono !important;
 }
 
-/* 1. 只隱藏最頂部的主導覽列（包含搜尋框、語系切換等），不影響 main 裡面的內容 */
-body > #__next > nav,
-header nav {
+/* 隱藏最上方的黑底主導覽列（包含搜尋框、語系） */
+body > #__next > div > nav:first-child,
+#__next > nav:first-child {
   display: none !important;
 }
 
-/* 2. 僅隱藏麵包屑路徑（首頁圖示與資料夾路徑連結） */
-main nav,
-main ol[class*="breadcrumb"],
-main [aria-label="Breadcrumb"] {
+/* 針對第二層導覽列：只隱藏左側的麵包屑/首頁連結，保留右側 SwitchLayout 切換按鈕 */
+nav .flex.items-center.truncate {
   display: none !important;
-}
-
-/* 3. 讓保留下來的右側操作按鈕（Grid/List 切換、批量下載等）排在右上方 */
-main > .flex.items-center.justify-between:first-child {
-  justify-content: flex-end !important;
 }
 
 /* 強制鎖定為淺色白底模式 */
