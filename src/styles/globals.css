@@ -39,7 +39,6 @@ nav.flex.items-center.justify-between {
   justify-content: flex-end !important;
 }
 
-
 /* 強制鎖定為淺色白底模式 */
 html,
 body,
@@ -66,4 +65,15 @@ body,
 /* 覆蓋檔案卡片與清單在深色下的邊框顏色 */
 [class*="dark:border-"] {
   border-color: #e5e7eb !important;
+}
+
+/* 限制 Plyr 播放器高度，確保直式 (9:16) 與橫式影片均不超出可視畫面 */
+.plyr {
+  max-height: 60vh !important;
+  margin: 0 auto !important;
+}
+
+.plyr video {
+  max-height: 60vh !important;
+  object-fit: contain !important;
 }
