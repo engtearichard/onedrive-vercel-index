@@ -2,13 +2,11 @@ import type { OdFolderChildren } from '../types'
 
 import Link from 'next/link'
 import { FC } from 'react'
-import { useClipboard } from 'use-clipboard-copy'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useTranslation } from 'next-i18next'
 
 import { getBaseUrl } from '../utils/getBaseUrl'
 import { humanFileSize, formatModifiedDateTime } from '../utils/fileDetails'
-
 import { Downloading, Checkbox, ChildIcon, ChildName } from './FileListing'
 import { getStoredToken } from '../utils/protectedRouteHandler'
 
@@ -41,13 +39,10 @@ const FolderListLayout = ({
   totalGenerating,
   handleSelectedDownload,
   folderGenerating,
-  handleSelectedPermalink,
   handleFolderDownload,
   toast,
 }) => {
-  const clipboard = useClipboard()
   const hashedToken = getStoredToken(path)
-
   const { t } = useTranslation()
 
   // Get item path from item name
@@ -55,57 +50,46 @@ const FolderListLayout = ({
 
   return (
     <div className="rounded bg-white shadow-sm dark:bg-gray-900 dark:text-gray-100">
-      <div className="grid grid-cols-12 items-center space-x-2 border-b border-gray-900/10 px-3 dark:border-gray-500/30">
-        <div className="col-span-12 py-2 text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-gray-300 md:col-span-6">
-          {t('Name')}
+      <div className="flex items-center justify-between border-b border-gray-900/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-600 dark:border-gray-500/30 dark:text-gray-400">
+        <div className="flex flex-1 items-center space-x-2">
+          <span className="md:w-6/12">{t('Name')}</span>
+          <span className="hidden md:block md:w-3/12">{t('Last Modified')}</span>
+          <span className="hidden md:block md:w-2/12">{t('Size')}</span>
         </div>
-        <div className="col-span-3 hidden text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-gray-300 md:block">
-          {t('Last Modified')}
-        </div>
-        <div className="hidden text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-gray-300 md:block">
-          {t('Size')}
-        </div>
-        <div className="hidden text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-gray-300 md:block">
-          {t('Actions')}
-        </div>
-        <div className="hidden text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-gray-300 md:block">
-          <div className="hidden p-1.5 text-gray-700 dark:text-gray-400 md:flex">
+
+        {/* 頂部操作群：與圖示模式一模一樣的「全選」與「下載」 */}
+        <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
+          {/* 全選 */}
+          <label className="flex cursor-pointer items-center space-x-1 rounded px-1.5 py-1 hover:bg-gray-100 dark:hover:bg-gray-800">
             <Checkbox
               checked={totalSelected}
               onChange={toggleTotalSelected}
               indeterminate={true}
-              title={t('Select files')}
+              title={t('Select all files')}
             />
+            <span className="text-xs font-normal normal-case">{t('全選')}</span>
+          </label>
+
+          {/* 下載 */}
+          {totalGenerating ? (
+            <Downloading title={t('Downloading selected files, refresh page to cancel')} style="px-1.5 py-1" />
+          ) : (
             <button
-              title={t('Copy selected files permalink')}
-              className="cursor-pointer rounded p-1.5 hover:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-400 disabled:hover:bg-white dark:hover:bg-gray-600 disabled:dark:text-gray-600 disabled:hover:dark:bg-gray-900"
+              title={t('Download selected files')}
+              className="flex cursor-pointer items-center space-x-1 rounded px-1.5 py-1 font-semibold normal-case text-blue-600 hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-40 disabled:hover:bg-transparent dark:text-blue-400 dark:hover:bg-gray-800"
               disabled={totalSelected === 0}
-              onClick={() => {
-                clipboard.copy(handleSelectedPermalink(getBaseUrl()))
-                toast.success(t('Copied selected files permalink.'))
-              }}
+              onClick={handleSelectedDownload}
             >
-              <FontAwesomeIcon icon={['far', 'copy']} size="lg" />
+              <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} />
+              <span className="text-xs">{t('下載')}</span>
             </button>
-            {totalGenerating ? (
-              <Downloading title={t('Downloading selected files, refresh page to cancel')} style="p-1.5" />
-            ) : (
-              <button
-                title={t('Download selected files')}
-                className="cursor-pointer rounded p-1.5 hover:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-400 disabled:hover:bg-white dark:hover:bg-gray-600 disabled:dark:text-gray-600 disabled:hover:dark:bg-gray-900"
-                disabled={totalSelected === 0}
-                onClick={handleSelectedDownload}
-              >
-                <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} size="lg" />
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
       {folderChildren.map((c: OdFolderChildren) => (
         <div
-          className="grid grid-cols-12 transition-all duration-100 hover:bg-gray-100 dark:hover:bg-gray-850"
+          className="grid grid-cols-12 items-center transition-all duration-100 hover:bg-gray-100 dark:hover:bg-gray-850"
           key={c.id}
         >
           <Link
@@ -116,19 +100,10 @@ const FolderListLayout = ({
             <FileListItem fileContent={c} />
           </Link>
 
-          {c.folder ? (
-            <div className="hidden p-1.5 text-gray-700 dark:text-gray-400 md:flex">
-              <span
-                title={t('Copy folder permalink')}
-                className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
-                onClick={() => {
-                  clipboard.copy(`${getBaseUrl()}${`${path === '/' ? '' : path}/${encodeURIComponent(c.name)}`}`)
-                  toast(t('Copied folder permalink.'), { icon: '👌' })
-                }}
-              >
-                <FontAwesomeIcon icon={['far', 'copy']} />
-              </span>
-              {folderGenerating[c.id] ? (
+          {/* 單檔/單資料夾操作按鈕（僅保留下載，移除複製連結） */}
+          <div className="hidden p-1.5 text-gray-700 dark:text-gray-400 md:flex">
+            {c.folder ? (
+              folderGenerating[c.id] ? (
                 <Downloading title={t('Downloading folder, refresh page to cancel')} style="px-1.5 py-1" />
               ) : (
                 <span
@@ -141,22 +116,8 @@ const FolderListLayout = ({
                 >
                   <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} />
                 </span>
-              )}
-            </div>
-          ) : (
-            <div className="hidden p-1.5 text-gray-700 dark:text-gray-400 md:flex">
-              <span
-                title={t('Copy raw file permalink')}
-                className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
-                onClick={() => {
-                  clipboard.copy(
-                    `${getBaseUrl()}/api/raw/?path=${getItemPath(c.name)}${hashedToken ? `&odpt=${hashedToken}` : ''}`
-                  )
-                  toast.success(t('Copied raw file permalink.'))
-                }}
-              >
-                <FontAwesomeIcon icon={['far', 'copy']} />
-              </span>
+              )
+            ) : (
               <a
                 title={t('Download file')}
                 className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
@@ -164,8 +125,10 @@ const FolderListLayout = ({
               >
                 <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} />
               </a>
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* 單檔選取 Checkbox */}
           <div className="hidden p-1.5 text-gray-700 dark:text-gray-400 md:flex">
             {!c.folder && !(c.name === '.password') && (
               <Checkbox
