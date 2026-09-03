@@ -29,17 +29,20 @@ code[class*='language-'] {
   @apply font-mono !important;
 }
 
-/* 隱藏頂部主導覽列 */
-nav {
+/* 1. 只隱藏最頂部的主導覽列（包含搜尋框、語系切換等），不影響 main 裡面的內容 */
+body > #__next > nav,
+header nav {
   display: none !important;
 }
 
-/* 只隱藏左側的返回首頁／麵包屑路徑，保留右側的 Grid/List 與操作按鈕 */
-main > .flex.items-center.justify-between:first-child > :first-child {
+/* 2. 僅隱藏麵包屑路徑（首頁圖示與資料夾路徑連結） */
+main nav,
+main ol[class*="breadcrumb"],
+main [aria-label="Breadcrumb"] {
   display: none !important;
 }
 
-/* 讓留下來的 Grid/List 按鈕群靠右對齊 */
+/* 3. 讓保留下來的右側操作按鈕（Grid/List 切換、批量下載等）排在右上方 */
 main > .flex.items-center.justify-between:first-child {
   justify-content: flex-end !important;
 }
