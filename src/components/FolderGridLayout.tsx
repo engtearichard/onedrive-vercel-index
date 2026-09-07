@@ -5,18 +5,15 @@ import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useTranslation } from 'next-i18next'
 
-import { getBaseUrl } from '../utils/getBaseUrl'
 import { formatModifiedDateTime } from '../utils/fileDetails'
 import { Checkbox, ChildIcon, ChildName, Downloading } from './FileListing'
 import { getStoredToken } from '../utils/protectedRouteHandler'
 
 const GridItem = ({ c, path }: { c: OdFolderChildren; path: string }) => {
-  // We use the generated medium thumbnail for rendering preview images (excluding folders)
   const hashedToken = getStoredToken(path)
   const thumbnailUrl =
     'folder' in c ? null : `/api/thumbnail/?path=${path}&size=medium${hashedToken ? `&odpt=${hashedToken}` : ''}`
 
-  // Some thumbnails are broken, so we check for onerror event in the image component
   const [brokenThumbnail, setBrokenThumbnail] = useState(false)
 
   return (
@@ -66,10 +63,8 @@ const FolderGridLayout = ({
   handleFolderDownload,
   toast,
 }) => {
-  const hashedToken = getStoredToken(path)
   const { t } = useTranslation()
 
-  // Get item path from item name
   const getItemPath = (name: string) => `${path === '/' ? '' : path}/${encodeURIComponent(name)}`
 
   return (
@@ -86,10 +81,10 @@ const FolderGridLayout = ({
               indeterminate={true}
               title={t('Select all files')}
             />
-            <span className="text-xs">{t('全選')}</span>
+            <span className="text-xs font-medium">{t('全選')}</span>
           </label>
 
-          {/* 下載 */}
+          {/* 只有在選取至少 1 個項目時，才高亮顯示下載按鈕 */}
           {totalGenerating ? (
             <Downloading title={t('Downloading selected files, refresh page to cancel')} style="px-1.5 py-1" />
           ) : (
@@ -112,40 +107,28 @@ const FolderGridLayout = ({
             key={c.id}
             className="group relative overflow-hidden rounded transition-all duration-100 hover:bg-gray-100 dark:hover:bg-gray-850"
           >
-            <div className="absolute top-0 right-0 z-10 m-1 rounded bg-white/50 py-0.5 opacity-0 transition-all duration-100 group-hover:opacity-100 dark:bg-gray-900/50">
-              {c.folder ? (
-                <div>
-                  {folderGenerating[c.id] ? (
-                    <Downloading title={t('Downloading folder, refresh page to cancel')} style="px-1.5 py-1" />
-                  ) : (
-                    <span
-                      title={t('Download folder')}
-                      className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
-                      onClick={handleFolderDownload(getItemPath(c.name), c.id, c.name)}
-                    >
-                      <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} />
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <div>
-                  <a
-                    title={t('Download file')}
+            {/* 若為資料夾，保留整包下載按鈕；若是單一檔案，則完全不放個別下載鍵 */}
+            {c.folder && (
+              <div className="absolute top-0 right-0 z-10 m-1 rounded bg-white/70 py-0.5 opacity-90 transition-all group-hover:opacity-100 dark:bg-gray-900/70">
+                {folderGenerating[c.id] ? (
+                  <Downloading title={t('Downloading folder, refresh page to cancel')} style="px-1.5 py-1" />
+                ) : (
+                  <span
+                    title={t('Download folder')}
                     className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
-                    href={`${getBaseUrl()}/api/raw/?path=${getItemPath(c.name)}${
-                      hashedToken ? `&odpt=${hashedToken}` : ''
-                    }`}
+                    onClick={handleFolderDownload(getItemPath(c.name), c.id, c.name)}
                   >
                     <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} />
-                  </a>
-                </div>
-              )}
-            </div>
+                  </span>
+                )}
+              </div>
+            )}
 
+            {/* 左上方多選勾選框 */}
             <div
               className={`${
-                selected[c.id] ? 'opacity-100' : 'opacity-0'
-              } absolute top-0 left-0 z-10 m-1 rounded bg-white/50 py-0.5 group-hover:opacity-100 dark:bg-gray-900/50`}
+                selected[c.id] ? 'opacity-100' : 'opacity-80 md:opacity-0'
+              } absolute top-0 left-0 z-10 m-1 rounded bg-white/70 py-0.5 group-hover:opacity-100 dark:bg-gray-900/70`}
             >
               {!c.folder && !(c.name === '.password') && (
                 <Checkbox
