@@ -4,46 +4,46 @@ import { FC } from 'react'
 import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-const Breadcrumb: FC<{ query?: ParsedUrlQuery }> = () => {
+const Breadcrumb: FC<{ query?: ParsedUrlQuery }> = ({ query }) => {
   const router = useRouter()
 
-  // 1. 安全取得純路徑字串
-  let asPath = router.asPath || ''
-  asPath = asPath.split('?')[0].split('#')[0]
-
-  // 2. 移除語系前綴 (例如 /en/ 或 /zh-CN/)
-  if (router.locale && asPath.startsWith(`/${router.locale}`)) {
-    asPath = asPath.substring(router.locale.length + 1)
+  // 優先使用 query.path，若未準備好則安全解析 router.asPath
+  let segments: string[] = []
+  if (query?.path) {
+    segments = Array.isArray(query.path) ? query.path : [query.path]
+  } else {
+    let asPath = (router.asPath || '').split('?')[0].split('#')[0]
+    if (router.locale && asPath.startsWith(`/${router.locale}`)) {
+      asPath = asPath.substring(router.locale.length + 1)
+    }
+    segments = asPath
+      .split('/')
+      .filter(s => s && s.trim().length > 0)
+      .map(s => {
+        try {
+          return decodeURIComponent(s)
+        } catch {
+          return s
+        }
+      })
   }
 
-  // 3. 安全切分並解碼每個路徑節點
-  const segments = asPath
-    .split('/')
-    .filter(s => s && s.trim().length > 0)
-    .map(s => {
-      try {
-        return decodeURIComponent(s)
-      } catch (e) {
-        return s
-      }
-    })
-
-  // 4. 關鍵安全層級判斷：
-  // 0 層: 最上層 (/)
-  // 1 層: 小朋友個人資料夾 (/Katherine 林品妤)
-  // 小於等於 1 層時，絕對不顯示「返回」按鈕！
+  // 關鍵防護：
+  // 0 層: 最上層根目錄 (/)
+  // 1 層: 小孩專屬資料夾 (/Katherine 林品妤)
+  // 小於等於 1 層時，強制隱藏返回鍵！
   const canGoBack = segments.length > 1
 
-  // 目前開啟的資料夾或檔案名稱
+  // 當前資料夾或檔案名稱
   const currentTitle = segments.length > 0 ? segments[segments.length - 1] : ''
 
-  // 計算安全返回上一層的路徑
+  // 計算上一層路徑
   const parentSegments = segments.slice(0, -1)
   const parentPath = parentSegments.length === 0 ? '/' : '/' + parentSegments.map(s => encodeURIComponent(s)).join('/')
 
   return (
     <div className="flex items-center space-x-2 truncate">
-      {/* 只有在第 2 層（活動資料夾）或照片預覽時，才顯示返回按鈕 */}
+      {/* 只有進入第 2 層（活動資料夾）或照片預覽時，才顯示返回按鈕 */}
       {canGoBack && (
         <Link
           href={parentPath}
