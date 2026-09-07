@@ -44,7 +44,6 @@ const FolderListLayout = ({
   handleFolderDownload,
   toast,
 }) => {
-  const hashedToken = getStoredToken(path)
   const { t } = useTranslation()
 
   // Get item path from item name
@@ -92,7 +91,7 @@ const FolderListLayout = ({
           className="flex items-center justify-between transition-all duration-100 hover:bg-gray-100 dark:hover:bg-gray-850"
           key={c.id}
         >
-          {/* 左側檔案資訊（點擊跳轉） */}
+          {/* 左側檔案資訊（點擊直接跳轉預覽） */}
           <Link
             href={`${path === '/' ? '' : path}/${encodeURIComponent(c.name)}`}
             passHref
@@ -101,12 +100,11 @@ const FolderListLayout = ({
             <FileListItem fileContent={c} />
           </Link>
 
-          {/* 右側操作按鈕群：手機與電腦隨時保持顯示 */}
+          {/* 右側操作區：拿掉單檔下載小圖示，僅保留勾選方框與資料夾下載 */}
           <div className="flex flex-shrink-0 items-center space-x-1 pr-3 text-gray-700 dark:text-gray-400">
-            {/* 單檔/資料夾直接下載按鈕 */}
-            <div>
-              {c.folder ? (
-                folderGenerating[c.id] ? (
+            {c.folder && (
+              <div>
+                {folderGenerating[c.id] ? (
                   <Downloading title={t('Downloading folder, refresh page to cancel')} style="px-1.5 py-1" />
                 ) : (
                   <span
@@ -119,26 +117,9 @@ const FolderListLayout = ({
                   >
                     <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} />
                   </span>
-                )
-              ) : (
-                <a
-                  title={t('Download file')}
-                  className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
-                  href={`/api/raw/?path=${getItemPath(c.name)}${hashedToken ? `&odpt=${hashedToken}` : ''}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download={c.name}
-                  onClick={() => {
-                    const toastId = toast.loading(t('準備下載中...'))
-                    setTimeout(() => {
-                      toast.success(t('已開始下載檔案！'), { id: toastId })
-                    }, 1000)
-                  }}
-                >
-                  <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} />
-                </a>
-              )}
-            </div>
+                )}
+              </div>
+            )}
 
             {/* 單選勾選框 */}
             <div>
