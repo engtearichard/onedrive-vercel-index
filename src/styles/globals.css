@@ -77,3 +77,12 @@ body,
   max-height: 60vh !important;
   object-fit: contain !important;
 }
+
+/* 限制照片預覽最大高度，直式/橫式皆自動縮放免滾動 */
+.preview-image,
+main img.mx-auto {
+  max-height: 60vh !important;
+  width: auto !important;
+  object-fit: contain !important;
+  margin: 0 auto !important;
+}
