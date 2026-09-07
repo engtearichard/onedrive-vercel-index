@@ -3,6 +3,7 @@ import type { OdFileObject } from '../../types'
 import { FC, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import toast from 'react-hot-toast'
 
 import axios from 'axios'
 import dynamic from 'next/dynamic'
@@ -58,7 +59,6 @@ const VideoPlayer: FC<{
     tracks: [{ kind: 'captions', label: videoName, src: '', default: true }],
   }
 
-  // 判斷是否為直式影片，動態計算寬高比
   const isPortrait = width && height ? height > width : false
   const plyrOptions: Plyr.Options = {
     ratio: width && height ? `${width}:${height}` : isPortrait ? '9:16' : '16:9',
@@ -99,6 +99,22 @@ const VideoPreview: FC<{ file: OdFileObject }> = ({ file }) => {
     }
   }, [isFlv])
 
+  // 下載邏輯：帶 toast 提示與跨裝置安全觸發
+  const handleDownload = () => {
+    const toastId = toast.loading(t('準備下載中...'))
+    const el = document.createElement('a')
+    el.href = videoUrl
+    el.target = '_blank'
+    el.rel = 'noopener noreferrer'
+    el.download = file.name
+    document.body.appendChild(el)
+    el.click()
+    el.remove()
+    setTimeout(() => {
+      toast.success(t('已開始下載影片！'), { id: toastId })
+    }, 800)
+  }
+
   return (
     <>
       <PreviewContainer>
@@ -120,11 +136,11 @@ const VideoPreview: FC<{ file: OdFileObject }> = ({ file }) => {
         )}
       </PreviewContainer>
 
-      {/* 只保留單一下載按鈕，介面簡潔且不佔垂直空間 */}
+      {/* 只保留單一下載按鈕，附帶下載提示 */}
       <DownloadBtnContainer>
         <div className="flex justify-center">
           <DownloadButton
-            onClickCallback={() => window.open(videoUrl)}
+            onClickCallback={handleDownload}
             btnColor="blue"
             btnText={t('Download')}
             btnIcon="file-download"
