@@ -4,6 +4,7 @@ import { FC, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import toast from 'react-hot-toast'
 
 import { PreviewContainer, DownloadBtnContainer } from './Containers'
 import { DownloadButton } from '../DownloadBtnGtoup'
@@ -65,6 +66,22 @@ const ImagePreview: FC<{ file: OdFileObject }> = ({ file }) => {
 
   const imageUrl = `/api/raw/?path=${asPath}${hashedToken ? `&odpt=${hashedToken}` : ''}`
 
+  // 下載邏輯：帶 toast 提示與跨裝置安全觸發
+  const handleDownload = () => {
+    const toastId = toast.loading(t('準備下載中...'))
+    const el = document.createElement('a')
+    el.href = imageUrl
+    el.target = '_blank'
+    el.rel = 'noopener noreferrer'
+    el.download = file.name
+    document.body.appendChild(el)
+    el.click()
+    el.remove()
+    setTimeout(() => {
+      toast.success(t('已開始下載照片！'), { id: toastId })
+    }, 800)
+  }
+
   return (
     <>
       <PreviewContainer>
@@ -103,7 +120,7 @@ const ImagePreview: FC<{ file: OdFileObject }> = ({ file }) => {
         </div>
       </PreviewContainer>
 
-      {/* 底部功能群：保留下載按鈕，若有多張照片亦可在底部顯示上一張/下一張 */}
+      {/* 底部功能群 */}
       <DownloadBtnContainer>
         <div className="flex items-center justify-center space-x-3">
           <button
@@ -116,7 +133,7 @@ const ImagePreview: FC<{ file: OdFileObject }> = ({ file }) => {
           </button>
 
           <DownloadButton
-            onClickCallback={() => window.open(imageUrl)}
+            onClickCallback={handleDownload}
             btnColor="blue"
             btnText={t('Download')}
             btnIcon="file-download"
