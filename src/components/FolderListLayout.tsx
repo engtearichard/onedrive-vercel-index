@@ -101,7 +101,7 @@ const FolderListLayout = ({
             <FileListItem fileContent={c} />
           </Link>
 
-          {/* 右側操作按鈕群：拔除 hidden，手機與電腦隨時保持顯示 */}
+          {/* 右側操作按鈕群：手機與電腦隨時保持顯示 */}
           <div className="flex flex-shrink-0 items-center space-x-1 pr-3 text-gray-700 dark:text-gray-400">
             {/* 單檔/資料夾直接下載按鈕 */}
             <div>
@@ -121,13 +121,25 @@ const FolderListLayout = ({
                   </span>
                 )
               ) : (
-                <a
+                <button
+                  type="button"
                   title={t('Download file')}
                   className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
-                  href={`/api/raw/?path=${getItemPath(c.name)}${hashedToken ? `&odpt=${hashedToken}` : ''}`}
+                  onClick={e => {
+                    e.stopPropagation()
+                    const downloadUrl = `/api/raw/?path=${getItemPath(c.name)}${hashedToken ? `&odpt=${hashedToken}` : ''}`
+                    const el = document.createElement('a')
+                    el.href = downloadUrl
+                    el.target = '_blank'
+                    el.rel = 'noopener noreferrer'
+                    el.download = c.name
+                    document.body.appendChild(el)
+                    el.click()
+                    el.remove()
+                  }}
                 >
                   <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} />
-                </a>
+                </button>
               )}
             </div>
 
