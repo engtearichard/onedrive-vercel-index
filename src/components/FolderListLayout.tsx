@@ -121,29 +121,22 @@ const FolderListLayout = ({
                   </span>
                 )
               ) : (
-                <button
-                  type="button"
+                <a
                   title={t('Download file')}
                   className="cursor-pointer rounded px-1.5 py-1 hover:bg-gray-300 dark:hover:bg-gray-600"
-                  onClick={e => {
-                    e.stopPropagation()
+                  href={`/api/raw/?path=${getItemPath(c.name)}${hashedToken ? `&odpt=${hashedToken}` : ''}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download={c.name}
+                  onClick={() => {
                     const toastId = toast.loading(t('準備下載中...'))
-                    const downloadUrl = `/api/raw/?path=${getItemPath(c.name)}${hashedToken ? `&odpt=${hashedToken}` : ''}`
-                    const el = document.createElement('a')
-                    el.href = downloadUrl
-                    el.target = '_blank'
-                    el.rel = 'noopener noreferrer'
-                    el.download = c.name
-                    document.body.appendChild(el)
-                    el.click()
-                    el.remove()
                     setTimeout(() => {
                       toast.success(t('已開始下載檔案！'), { id: toastId })
-                    }, 800)
+                    }, 1000)
                   }}
                 >
                   <FontAwesomeIcon icon={['far', 'arrow-alt-circle-down']} />
-                </button>
+                </a>
               )}
             </div>
 
