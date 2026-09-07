@@ -99,20 +99,13 @@ const VideoPreview: FC<{ file: OdFileObject }> = ({ file }) => {
     }
   }, [isFlv])
 
-  // 下載邏輯：帶 toast 提示與跨裝置安全觸發
+  // 下載邏輯：採用最純淨的 window.open，搭配 toast 提示
   const handleDownload = () => {
     const toastId = toast.loading(t('準備下載中...'))
-    const el = document.createElement('a')
-    el.href = videoUrl
-    el.target = '_blank'
-    el.rel = 'noopener noreferrer'
-    el.download = file.name
-    document.body.appendChild(el)
-    el.click()
-    el.remove()
+    window.open(videoUrl, '_blank')
     setTimeout(() => {
       toast.success(t('已開始下載影片！'), { id: toastId })
-    }, 800)
+    }, 1000)
   }
 
   return (
