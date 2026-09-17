@@ -88,7 +88,7 @@ const FolderListLayout = ({
 
       {folderChildren.map((c: OdFolderChildren) => (
         <div
-          className="flex items-center justify-between transition-all duration-100 hover:bg-gray-100 dark:hover:bg-gray-850"
+          className="flex items-center justify-between transition-all duration-100 hover:bg-blue-50 dark:hover:bg-blue-50"
           key={c.id}
         >
           {/* 左側檔案資訊（點擊直接跳轉預覽） */}
