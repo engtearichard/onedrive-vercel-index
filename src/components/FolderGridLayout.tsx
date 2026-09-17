@@ -105,7 +105,7 @@ const FolderGridLayout = ({
         {folderChildren.map((c: OdFolderChildren) => (
           <div
             key={c.id}
-            className="group relative overflow-hidden rounded transition-all duration-100 hover:bg-gray-100 dark:hover:bg-gray-850"
+            className="group relative overflow-hidden rounded transition-all duration-100 hover:bg-blue-50 dark:hover:bg-blue-50"
           >
             {/* 若為資料夾，保留整包下載按鈕；若是單一檔案，則完全不放個別下載鍵 */}
             {c.folder && (
